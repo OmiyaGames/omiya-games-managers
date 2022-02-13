@@ -2,7 +2,7 @@
 
 [![openupm](https://img.shields.io/npm/v/com.omiyagames.managers?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.omiyagames.managers/) [![Documentation](https://github.com/OmiyaGames/omiya-games-managers/workflows/Host%20DocFX%20Documentation/badge.svg)](https://omiyagames.github.io/omiya-games-managers/) [![Ko-fi Badge](https://img.shields.io/badge/donate-ko--fi-29abe0.svg?logo=ko-fi)](https://ko-fi.com/I3I51KS8F) [![License Badge](https://img.shields.io/github/license/OmiyaGames/omiya-games-managers)](/LICENSE.md) 
 
-A tool for playing full-screen, juicy special effects.  Currently a work-in-progress.
+A library of static-accessible manager scripts.
 
 ## Install
 
@@ -25,7 +25,7 @@ npm install -g openupm-cli
 ```
 Then, to install this package, just run the following command at the root of your Unity project:
 ```
-openupm add com.omiyagames.time
+openupm add com.omiyagames.managers
 ```
 
 ## Resources
