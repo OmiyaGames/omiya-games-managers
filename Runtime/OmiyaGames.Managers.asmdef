@@ -1,12 +1,11 @@
 {
-    "name": "OmiyaGames.Template.Editor.Tests",
+    "name": "OmiyaGames.Managers",
+    "rootNamespace": "OmiyaGames.Managers",
     "references": [
-        "OmiyaGames.Template",
-        "OmiyaGames.Template.Editor"
+        "GUID:5a47daee1058bbd4ebc7a2d2e7de3c24",
+        "GUID:1423d14cb49c2df4bbd0d62190b654ab"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
@@ -14,7 +13,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ]
+    "noEngineReferences": false
 }
