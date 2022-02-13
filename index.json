@@ -1,0 +1,27 @@
+{
+  "api/OmiyaGames.Managers.html": {
+    "href": "api/OmiyaGames.Managers.html",
+    "title": "Namespace OmiyaGames.Managers | Managers documentation",
+    "keywords": "Namespace OmiyaGames.Managers Classes TimeManager"
+  },
+  "api/OmiyaGames.Managers.TimeManager.html": {
+    "href": "api/OmiyaGames.Managers.TimeManager.html",
+    "title": "Class TimeManager | Managers documentation",
+    "keywords": "Class TimeManager Inheritance Object TimeManager Namespace : OmiyaGames.Managers Assembly : cs.temp.dll.dll Syntax public class TimeManager : MonoBehaviour Properties IsManuallyPaused If true, pauses the game. Declaration public static bool IsManuallyPaused { get; set; } Property Value Type Description Boolean TimeScale The \"stable\" time scale, unaffected by hit-pauses, etc. Declaration public static float TimeScale { get; set; } Property Value Type Description Single Methods GetInstance() Grabs the static instance of this manager. Declaration protected static TimeManager GetInstance() Returns Type Description TimeManager RevertTimeScale() Reverts the default time scale stored in . Declaration public static void RevertTimeScale() SetTimeScaleFor(Single, Single) Temporarily changes the game's timescale for a short duration. Declaration public static void SetTimeScaleFor(float timeScale, float durationSeconds) Parameters Type Name Description Single timeScale The timescale to set to. Single durationSeconds How long the change lasts, in seconds. Duration is not affected by . Events OnAfterManualPauseChanged Triggers when paused. Declaration public static event Action<TimeManager> OnAfterManualPauseChanged Event Type Type Description Action < TimeManager > OnBeforeManualPauseChanged Triggers when paused. Declaration public static event Action<TimeManager> OnBeforeManualPauseChanged Event Type Type Description Action < TimeManager >"
+  },
+  "index.html": {
+    "href": "index.html",
+    "title": "Omiya Games - Managers | Managers documentation",
+    "keywords": "Omiya Games - Managers A library of static-accessible manager scripts. Install There are two common methods for installing this package. Through Unity Package Manager Unity's own Package Manager supports importing packages through a URL to a Git repo : First, on this repository page, click the \"Clone or download\" button, and copy over this repository's HTTPS URL. Then click on the + button on the upper-left-hand corner of the Package Manager, select \"Add package from git URL...\" on the context menu, then paste this repo's URL! While easy and straightforward, this method has a few major downside: it does not support dependency resolution and package upgrading when a new version is released. To add support for that, the following method is recommended: Through OpenUPM Installing via OpenUPM's command line tool is recommended because it supports dependency resolution, upgrading, and downgrading this package. If you haven't already installed OpenUPM , you can do so through Node.js's npm (obviously have Node.js installed in your system first): npm install -g openupm-cli Then, to install this package, just run the following command at the root of your Unity project: openupm add com.omiyagames.managers Resources Documentation Change Log LICENSE Overall package is licensed under MIT , unless otherwise noted in the 3rd party licenses file and/or source code. Copyright (c) 2022 Omiya Games"
+  },
+  "manual/changelog.html": {
+    "href": "manual/changelog.html",
+    "title": "Change Log: | Managers documentation",
+    "keywords": "Change Log: 1.0.0-pre.1 Initial release! Adding TimeManager to handle time scale management."
+  },
+  "manual/README.html": {
+    "href": "manual/README.html",
+    "title": "| Managers documentation",
+    "keywords": "This folder contains markdown files listed under \"Manual\" section in the documentation. When adding or removing any files in this folder, don't forget to update toc.yml accordingly!"
+  }
+}

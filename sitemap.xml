@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://omiyagames.github.io/omiya-games-managers/api/OmiyaGames.Managers.TimeManager.html</loc>
+    <lastmod>2022-02-13T03:30:47+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://omiyagames.github.io/omiya-games-managers/api/OmiyaGames.Managers.html</loc>
+    <lastmod>2022-02-13T03:30:47+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://omiyagames.github.io/omiya-games-managers/index.html</loc>
+    <lastmod>2022-02-13T03:30:47+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://omiyagames.github.io/omiya-games-managers/manual/changelog.html</loc>
+    <lastmod>2022-02-13T03:30:47+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://omiyagames.github.io/omiya-games-managers/manual/README.html</loc>
+    <lastmod>2022-02-13T03:30:47+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
