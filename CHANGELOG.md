@@ -2,7 +2,7 @@
 
 ## 1.0.1-pre.1
 
-- **Bug Fix:** hit-pausing [`TimeManager`](/Runtime/TimeManager.cs) is no longer permanent.
+- **Bug Fix:** making the call [`TimeManager.SetTimeScaleFor()`](/Runtime/TimeManager.cs) will no longer permanently change the time scale.
 
 ## 1.0.0-pre.1
 
