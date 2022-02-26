@@ -4,6 +4,7 @@ using OmiyaGames.Global;
 namespace OmiyaGames.Managers
 {
 	///-----------------------------------------------------------------------
+	/// <remarks>
 	/// <copyright file="TimeManager.cs" company="Omiya Games">
 	/// The MIT License (MIT)
 	/// 
@@ -66,7 +67,7 @@ namespace OmiyaGames.Managers
 		/// <seealso cref="Data"/>
 		protected static TimeManager GetInstance()
 		{
-			TimeManager returnInstance = ComponentSingleton<TimeManager>.Get(true, out bool isFirstTimeCreated);
+			TimeManager returnInstance = ComponentSingleton<TimeManager>.Get(false, out bool isFirstTimeCreated);
 			if (isFirstTimeCreated)
 			{
 				// Grab the saved time scale
@@ -92,6 +93,7 @@ namespace OmiyaGames.Managers
 		float slowDownDuration = 1f;
 		bool isManuallyPaused = false;
 		float lastChangedTimeScaleTemp = DONT_CHANGE_TIME_SCALE;
+		FramesManager.EachFrame lastUpdate = null;
 
 		/// <summary>
 		/// The "stable" time scale, unaffected by
@@ -108,6 +110,9 @@ namespace OmiyaGames.Managers
 				TimeManager self = GetInstance();
 				if (Mathf.Approximately(self.timeScale, value) == false)
 				{
+					// Reset TimeManager
+					self.OnDestroy();
+
 					// Change value
 					self.timeScale = value;
 					UpdateTimeScale(self);
@@ -131,6 +136,9 @@ namespace OmiyaGames.Managers
 				{
 					// Shoot the pause event
 					OnBeforeManualPauseChanged?.Invoke(self);
+
+					// Reset TimeManager
+					self.OnDestroy();
 
 					// Change value
 					self.isManuallyPaused = value;
@@ -162,8 +170,11 @@ namespace OmiyaGames.Managers
 		/// </param>
 		public static void SetTimeScaleFor(float timeScale, float durationSeconds)
 		{
-			// Store how long it's going to change the time scale
+			// Reset TimeManager
 			TimeManager self = GetInstance();
+			self.OnDestroy();
+
+			// Store how long it's going to change the time scale
 			self.slowDownDuration = durationSeconds;
 
 			// Update flags to revert the time scale later
@@ -171,21 +182,35 @@ namespace OmiyaGames.Managers
 
 			// Change the time scale
 			Time.timeScale = timeScale;
+
+			// Check for each new update
+			self.lastUpdate = new FramesManager.EachFrame(self.OnUpdate);
+			FramesManager.OnUpdate += self.lastUpdate;
 		}
 
-		// TODO: consider using different alternatives than using Update()
-		void Update()
+		void OnUpdate(FramesManager source, FramesManager.FrameArgs args)
 		{
 			// Check to see if we're not paused, and changed the time scale temporarily
-			if ((IsManuallyPaused == false) && (lastChangedTimeScaleTemp > 0)
+			if ((IsManuallyPaused == false)
+
 				// Check to see if enough time has passed to revert the time scale
-				&& (Time.unscaledTime - lastChangedTimeScaleTemp) > slowDownDuration)
+				&& (args.TimeSinceStartUnscaled - lastChangedTimeScaleTemp) > slowDownDuration)
 			{
 				// Revert the time scale
 				Time.timeScale = TimeScale;
 
 				// Flag that the change is finished
-				lastChangedTimeScaleTemp = DONT_CHANGE_TIME_SCALE;
+				OnDestroy();
+			}
+		}
+
+		void OnDestroy()
+		{
+			// Clean up any event bindings
+			if (lastUpdate != null)
+			{
+				FramesManager.OnUpdate -= lastUpdate;
+				lastUpdate = null;
 			}
 		}
 
@@ -209,6 +234,7 @@ namespace OmiyaGames.Managers
 		{
 			float timeScale = 1f;
 
+			// FIXME: retrieve time-scale through other means
 			// Attempt to retrieve the time scale from settings
 			Saves.GameSettings settings = Singleton.Get<Saves.GameSettings>();
 			if (settings != null)
