@@ -59,8 +59,6 @@ namespace OmiyaGames.Managers
 	/// </summary>
 	public class TimeManager : MonoBehaviour
 	{
-		const float DONT_CHANGE_TIME_SCALE = -1f;
-
 		/// <summary>
 		/// Grabs the static instance of this manager.
 		/// </summary>
@@ -90,10 +88,8 @@ namespace OmiyaGames.Managers
 		public static event System.Action<TimeManager> OnAfterManualPauseChanged;
 
 		float timeScale = 1f;
-		float slowDownDuration = 1f;
 		bool isManuallyPaused = false;
-		float lastChangedTimeScaleTemp = DONT_CHANGE_TIME_SCALE;
-		FramesManager.EachFrame lastUpdate = null;
+		Coroutine tempTimeScaleChange = null;
 
 		/// <summary>
 		/// The "stable" time scale, unaffected by
@@ -174,43 +170,16 @@ namespace OmiyaGames.Managers
 			TimeManager self = GetInstance();
 			self.OnDestroy();
 
-			// Store how long it's going to change the time scale
-			self.slowDownDuration = durationSeconds;
-
-			// Update flags to revert the time scale later
-			self.lastChangedTimeScaleTemp = Time.unscaledTime;
-
-			// Change the time scale
-			Time.timeScale = timeScale;
-
-			// Check for each new update
-			self.lastUpdate = new FramesManager.EachFrame(self.OnUpdate);
-			FramesManager.OnUpdate += self.lastUpdate;
-		}
-
-		void OnUpdate(FramesManager source, FramesManager.FrameArgs args)
-		{
-			// Check to see if we're not paused, and changed the time scale temporarily
-			if ((IsManuallyPaused == false)
-
-				// Check to see if enough time has passed to revert the time scale
-				&& (args.TimeSinceStartUnscaled - lastChangedTimeScaleTemp) > slowDownDuration)
-			{
-				// Revert the time scale
-				Time.timeScale = TimeScale;
-
-				// Flag that the change is finished
-				OnDestroy();
-			}
+			// Start a coroutine
+			self.tempTimeScaleChange = FramesManager.Start(self.SetTimeScaleCoroutine(timeScale, durationSeconds));
 		}
 
 		void OnDestroy()
 		{
-			// Clean up any event bindings
-			if (lastUpdate != null)
+			if (tempTimeScaleChange != null)
 			{
-				FramesManager.OnUpdate -= lastUpdate;
-				lastUpdate = null;
+				FramesManager.Stop(tempTimeScaleChange);
+				tempTimeScaleChange = null;
 			}
 		}
 
@@ -242,6 +211,18 @@ namespace OmiyaGames.Managers
 				timeScale = settings.CustomTimeScale;
 			}
 			return timeScale;
+		}
+
+		System.Collections.IEnumerator SetTimeScaleCoroutine(float timeScale, float durationSeconds)
+		{
+			// Change the time scale
+			Time.timeScale = timeScale;
+
+			// Wait for a short duration
+			yield return new WaitForSecondsRealtime(durationSeconds);
+
+			// Revert the time scale
+			UpdateTimeScale(this);
 		}
 		#endregion
 	}
