@@ -83,7 +83,10 @@
   
   <h1 id="OmiyaGames_Managers_TimeManager" data-uid="OmiyaGames.Managers.TimeManager" class="text-break">Class TimeManager
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>A manager for adjusting the time scale.  Used for manually
+pausing the game.  Also allows temporarily slowing down or quickening time,
+useful for creating common juicy effects.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
@@ -94,8 +97,50 @@
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="OmiyaGames_Managers_TimeManager_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class TimeManager : MonoBehaviour</code></pre>
+    <pre><code class="lang-csharp hljs">public static class TimeManager</code></pre>
   </div>
+  <h5 id="OmiyaGames_Managers_TimeManager_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p><copyright file="TimeManager.cs" company="Omiya Games">
+The MIT License (MIT)<p>
+<p>Copyright (c) 2014-2022 Omiya Games</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</copyright>
+<table><thead><tr><th>Revision</th><th>Description</th></tr></thead><tbody><tr><td>
+<strong>Date:</strong> 5/18/2015<br>
+<strong>Author:</strong> Taro Omiya
+</td><td>Initial verison.</td></tr><tr><td>
+<strong>Version:</strong> 1.0.0-pre.1<br>
+<strong>Date:</strong> 2/12/2022<br>
+<strong>Author:</strong> Taro Omiya
+</td><td>
+Converting from Singleton script to its own unique package.
+</td></tr><tr><td>
+<strong>Version:</strong> 1.0.1-pre.2<br>
+<strong>Date:</strong> 2/12/2022<br>
+<strong>Author:</strong> Taro Omiya
+</td><td>
+Changing to a <code>static</code> class so this script can&apos;t be
+accidentally attached to another <see cref="!:GameObject"></see>.
+Renamed <code>OnBeforeManualPausedChanged</code> to
+<a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnBeforeIsManuallyPausedChanged">OnBeforeIsManuallyPausedChanged</a>, and
+<code>OnAfterManualPausedChanged</code> to
+<a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnAfterIsManuallyPausedChanged">OnAfterIsManuallyPausedChanged</a>.
+</td></tr></tbody></table></p>
+</div>
   <h3 id="properties">Properties
   </h3>
   
@@ -155,32 +200,6 @@ hit-pauses, etc.</p>
   </h3>
   
   
-  <a id="OmiyaGames_Managers_TimeManager_GetInstance_" data-uid="OmiyaGames.Managers.TimeManager.GetInstance*"></a>
-  <h4 id="OmiyaGames_Managers_TimeManager_GetInstance" data-uid="OmiyaGames.Managers.TimeManager.GetInstance">GetInstance()</h4>
-  <div class="markdown level1 summary"><p>Grabs the static instance of this manager.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected static TimeManager GetInstance()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="OmiyaGames.Managers.TimeManager.html">TimeManager</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
   <a id="OmiyaGames_Managers_TimeManager_RevertTimeScale_" data-uid="OmiyaGames.Managers.TimeManager.RevertTimeScale*"></a>
   <h4 id="OmiyaGames_Managers_TimeManager_RevertTimeScale" data-uid="OmiyaGames.Managers.TimeManager.RevertTimeScale">RevertTimeScale()</h4>
   <div class="markdown level1 summary"><p>Reverts the default time scale stored in
@@ -231,13 +250,13 @@ Duration is not affected by <seealso cref="!:Time.timeScale"></seealso>.</p>
   </h3>
   
   
-  <h4 id="OmiyaGames_Managers_TimeManager_OnAfterManualPauseChanged" data-uid="OmiyaGames.Managers.TimeManager.OnAfterManualPauseChanged">OnAfterManualPauseChanged</h4>
+  <h4 id="OmiyaGames_Managers_TimeManager_OnAfterIsManuallyPausedChanged" data-uid="OmiyaGames.Managers.TimeManager.OnAfterIsManuallyPausedChanged">OnAfterIsManuallyPausedChanged</h4>
   <div class="markdown level1 summary"><p>Triggers when paused.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static event Action&lt;TimeManager&gt; OnAfterManualPauseChanged</code></pre>
+    <pre><code class="lang-csharp hljs">public static event ITrackable&lt;bool&gt;.ChangeEvent OnAfterIsManuallyPausedChanged</code></pre>
   </div>
   <h5 class="eventType">Event Type</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -249,20 +268,20 @@ Duration is not affected by <seealso cref="!:Time.timeScale"></seealso>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="OmiyaGames.Managers.TimeManager.html">TimeManager</a>&gt;</td>
+        <td><span class="xref">ITrackable.ChangeEvent</span>&lt;&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <h4 id="OmiyaGames_Managers_TimeManager_OnBeforeManualPauseChanged" data-uid="OmiyaGames.Managers.TimeManager.OnBeforeManualPauseChanged">OnBeforeManualPauseChanged</h4>
+  <h4 id="OmiyaGames_Managers_TimeManager_OnBeforeIsManuallyPausedChanged" data-uid="OmiyaGames.Managers.TimeManager.OnBeforeIsManuallyPausedChanged">OnBeforeIsManuallyPausedChanged</h4>
   <div class="markdown level1 summary"><p>Triggers when paused.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static event Action&lt;TimeManager&gt; OnBeforeManualPauseChanged</code></pre>
+    <pre><code class="lang-csharp hljs">public static event ITrackable&lt;bool&gt;.ChangeEvent OnBeforeIsManuallyPausedChanged</code></pre>
   </div>
   <h5 class="eventType">Event Type</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -274,7 +293,7 @@ Duration is not affected by <seealso cref="!:Time.timeScale"></seealso>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="OmiyaGames.Managers.TimeManager.html">TimeManager</a>&gt;</td>
+        <td><span class="xref">ITrackable.ChangeEvent</span>&lt;&gt;</td>
         <td></td>
       </tr>
     </tbody>

@@ -79,6 +79,13 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="change-log">Change Log:</h1>
 
+<h2 id="101-pre2">1.0.1-pre.2</h2>
+<ul>
+<li>Changing <a href="/Runtime/TimeManager.cs"><code>TimeManager</code></a> to a static class.<ul>
+<li><strong>Breaking Change:</strong> Renamed event <code>OnBeforeManualPausedChanged(TimeManager)</code> and <code>OnAfterManualPausedChanged(TimeManager)</code> in <a href="/Runtime/TimeManager.cs"><code>TimeManager</code></a> to <code>OnBeforeIsManuallyPausedChanged(bool, bool)</code> and <code>OnAfterIsManuallyPausedChanged(bool, bool)</code> respectively.</li>
+</ul>
+</li>
+</ul>
 <h2 id="101-pre1">1.0.1-pre.1</h2>
 <ul>
 <li><strong>Bug Fix:</strong> making the call <a href="/Runtime/TimeManager.cs"><code>TimeManager.SetTimeScaleFor()</code></a> will no longer permanently change the time scale.</li>
