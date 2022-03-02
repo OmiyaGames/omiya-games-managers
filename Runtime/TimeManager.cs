@@ -48,6 +48,15 @@ namespace OmiyaGames.Managers
 	/// <description>
 	/// Converting from Singleton script to its own unique package.
 	/// </description>
+	/// </item><item>
+	/// <term>
+	/// <strong>Version:</strong> 1.0.1-pre.2<br/>
+	/// <strong>Date:</strong> 2/12/2022<br/>
+	/// <strong>Author:</strong> Taro Omiya
+	/// </term>
+	/// <description>
+	/// mAKING
+	/// </description>
 	/// </item>
 	/// </list>
 	/// </remarks>
@@ -57,23 +66,23 @@ namespace OmiyaGames.Managers
 	/// pausing the game.  Also allows temporarily slowing down or quickening time,
 	/// useful for creating common juicy effects.
 	/// </summary>
-	public class TimeManager : MonoBehaviour
+	public static class TimeManager
 	{
 		/// <summary>
 		/// Grabs the static instance of this manager.
 		/// </summary>
 		/// <seealso cref="Data"/>
-		protected static TimeManager GetInstance()
+		static Impl GetInstance()
 		{
-			TimeManager returnInstance = ComponentSingleton<TimeManager>.Get(false, out bool isFirstTimeCreated);
+			Impl returnInstance = ComponentSingleton<Impl>.Get(false, out bool isFirstTimeCreated);
 			if (isFirstTimeCreated)
 			{
 				// Grab the saved time scale
 				float timeScale = GetDefaultTimeScale();
 
 				// Update the time scales
-				returnInstance.timeScale = timeScale;
-				Time.timeScale = timeScale;
+				returnInstance.Setup();
+				returnInstance.TimeScale.Value = timeScale;
 			}
 			return returnInstance;
 		}
@@ -81,39 +90,28 @@ namespace OmiyaGames.Managers
 		/// <summary>
 		/// Triggers when paused.
 		/// </summary>
-		public static event System.Action<TimeManager> OnBeforeManualPauseChanged;
+		public static event ITrackable<bool>.ChangeEvent OnBeforeIsManuallyPausedChanged
+		{
+			add => GetInstance().IsManuallyPaused.OnBeforeValueChanged += value;
+			remove => GetInstance().IsManuallyPaused.OnBeforeValueChanged -= value;
+		}
 		/// <summary>
 		/// Triggers when paused.
 		/// </summary>
-		public static event System.Action<TimeManager> OnAfterManualPauseChanged;
-
-		float timeScale = 1f;
-		bool isManuallyPaused = false;
-		Coroutine tempTimeScaleChange = null;
-
-		/// <summary>
-		/// The "stable" time scale, unaffected by
-		/// hit-pauses, etc.
-		/// </summary>
-		public static float TimeScale
+		public static event ITrackable<bool>.ChangeEvent OnAfterIsManuallyPausedChanged
 		{
-			get
-			{
-				return GetInstance().timeScale;
-			}
-			set
-			{
-				TimeManager self = GetInstance();
-				if (Mathf.Approximately(self.timeScale, value) == false)
-				{
-					// Reset TimeManager
-					self.OnDestroy();
+			add => GetInstance().IsManuallyPaused.OnAfterValueChanged += value;
+			remove => GetInstance().IsManuallyPaused.OnAfterValueChanged -= value;
+		}
 
-					// Change value
-					self.timeScale = value;
-					UpdateTimeScale(self);
-				}
-			}
+	/// <summary>
+	/// The "stable" time scale, unaffected by
+	/// hit-pauses, etc.
+	/// </summary>
+	public static float TimeScale
+		{
+			get => GetInstance().TimeScale.Value;
+			set => GetInstance().TimeScale.Value = value;
 		}
 
 		/// <summary>
@@ -121,29 +119,8 @@ namespace OmiyaGames.Managers
 		/// </summary>
 		public static bool IsManuallyPaused
 		{
-			get
-			{
-				return GetInstance().isManuallyPaused;
-			}
-			set
-			{
-				TimeManager self = GetInstance();
-				if (self.isManuallyPaused != value)
-				{
-					// Shoot the pause event
-					OnBeforeManualPauseChanged?.Invoke(self);
-
-					// Reset TimeManager
-					self.OnDestroy();
-
-					// Change value
-					self.isManuallyPaused = value;
-					UpdateTimeScale(self);
-
-					// Shoot the pause event
-					OnAfterManualPauseChanged?.Invoke(self);
-				}
-			}
+			get => GetInstance().IsManuallyPaused.Value;
+			set => GetInstance().IsManuallyPaused.Value = value;
 		}
 
 		/// <summary>
@@ -167,36 +144,11 @@ namespace OmiyaGames.Managers
 		public static void SetTimeScaleFor(float timeScale, float durationSeconds)
 		{
 			// Reset TimeManager
-			TimeManager self = GetInstance();
+			Impl self = GetInstance();
 			self.OnDestroy();
 
 			// Start a coroutine
 			self.tempTimeScaleChange = Manager.StartCoroutine(self.SetTimeScaleCoroutine(timeScale, durationSeconds));
-		}
-
-		void OnDestroy()
-		{
-			if (tempTimeScaleChange != null)
-			{
-				Manager.StopCoroutine(tempTimeScaleChange);
-				tempTimeScaleChange = null;
-			}
-		}
-
-		#region Helper Methods
-		static void UpdateTimeScale(TimeManager self)
-		{
-			// Check if paused
-			if (IsManuallyPaused == false)
-			{
-				// If not, progress normally
-				Time.timeScale = self.timeScale;
-			}
-			else
-			{
-				// If so, pause
-				Time.timeScale = 0f;
-			}
 		}
 
 		static float GetDefaultTimeScale()
@@ -213,17 +165,138 @@ namespace OmiyaGames.Managers
 			return timeScale;
 		}
 
-		System.Collections.IEnumerator SetTimeScaleCoroutine(float timeScale, float durationSeconds)
+		class Impl : MonoBehaviour
 		{
-			// Change the time scale
-			Time.timeScale = timeScale;
+			TrackTimeScale timeScale = null;
+			TrackIsPaused isManuallyPaused = null;
+			public Coroutine tempTimeScaleChange = null;
 
-			// Wait for a short duration
-			yield return new WaitForSecondsRealtime(durationSeconds);
+			public ITrackable<float> TimeScale => timeScale;
+			public ITrackable<bool> IsManuallyPaused => isManuallyPaused;
 
-			// Revert the time scale
-			UpdateTimeScale(this);
+			public void OnDestroy()
+			{
+				if (tempTimeScaleChange != null)
+				{
+					Manager.StopCoroutine(tempTimeScaleChange);
+					tempTimeScaleChange = null;
+				}
+			}
+
+			public void Setup()
+			{
+				if (timeScale == null)
+				{
+					timeScale = new TrackTimeScale();
+					timeScale.Update += UpdateTimeScale;
+				}
+				if (isManuallyPaused == null)
+				{
+					isManuallyPaused = new TrackIsPaused();
+					isManuallyPaused.Update += UpdateTimeScale;
+				}
+			}
+
+			public System.Collections.IEnumerator SetTimeScaleCoroutine(float tempTimeScale, float durationSeconds)
+			{
+				// Change the time scale
+				Time.timeScale = tempTimeScale;
+
+				// Wait for a short duration
+				yield return new WaitForSecondsRealtime(durationSeconds);
+
+				// Revert the time scale
+				UpdateTimeScale(TimeScale.Value);
+			}
+
+			void UpdateTimeScale(float timeScale) => UpdateTimeScale(timeScale, IsManuallyPaused.Value);
+			void UpdateTimeScale(bool isManuallyPaused) => UpdateTimeScale(TimeScale.Value, isManuallyPaused);
+
+			static void UpdateTimeScale(float timeScale, bool isManuallyPaused)
+			{
+				// Check if paused
+				if (isManuallyPaused == false)
+				{
+					// If not, progress normally
+					Time.timeScale = timeScale;
+				}
+				else
+				{
+					// If so, pause
+					Time.timeScale = 0f;
+				}
+			}
+
+			class TrackTimeScale : TrackableDecorator<float>
+			{
+				float timeScale = 1f;
+
+				public event System.Action<float> Update;
+				/// <inheritdoc/>
+				public override event ITrackable<float>.ChangeEvent OnBeforeValueChanged;
+				/// <inheritdoc/>
+				public override event ITrackable<float>.ChangeEvent OnAfterValueChanged;
+
+				/// <inheritdoc/>
+				public override float Value
+				{
+					get => timeScale;
+					set
+					{
+						// Clamp value
+						if (value < 0f)
+						{
+							value = 0f;
+						}
+
+						// Check if the values are different
+						if (Mathf.Approximately(value, timeScale))
+						{
+							// Halt, if not
+							return;
+						}
+
+						// Trigger events
+						OnBeforeValueChanged?.Invoke(timeScale, value);
+
+						float oldValue = timeScale;
+						timeScale = value;
+						Update(timeScale);
+
+						OnAfterValueChanged?.Invoke(oldValue, timeScale);
+					}
+				}
+			}
+
+			class TrackIsPaused : TrackableDecorator<bool>
+			{
+				bool isPaused = false;
+
+				public event System.Action<bool> Update;
+				/// <inheritdoc/>
+				public override event ITrackable<bool>.ChangeEvent OnBeforeValueChanged;
+				/// <inheritdoc/>
+				public override event ITrackable<bool>.ChangeEvent OnAfterValueChanged;
+
+				/// <inheritdoc/>
+				public override bool Value
+				{
+					get => isPaused;
+					set
+					{
+						if (isPaused != value)
+						{
+							OnBeforeValueChanged?.Invoke(isPaused, value);
+
+							bool oldValue = isPaused;
+							isPaused = value;
+							Update(isPaused);
+
+							OnAfterValueChanged?.Invoke(oldValue, isPaused);
+						}
+					}
+				}
+			}
 		}
-		#endregion
 	}
 }
