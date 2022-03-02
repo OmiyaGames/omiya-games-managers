@@ -109,11 +109,11 @@ namespace OmiyaGames.Managers
 			remove => GetInstance().IsManuallyPaused.OnAfterValueChanged -= value;
 		}
 
-	/// <summary>
-	/// The "stable" time scale, unaffected by
-	/// hit-pauses, etc.
-	/// </summary>
-	public static float TimeScale
+		/// <summary>
+		/// The "stable" time scale, unaffected by
+		/// hit-pauses, etc.
+		/// </summary>
+		public static float TimeScale
 		{
 			get => GetInstance().TimeScale.Value;
 			set => GetInstance().TimeScale.Value = value;
@@ -146,15 +146,7 @@ namespace OmiyaGames.Managers
 		/// How long the change lasts, in seconds.
 		/// Duration is not affected by <seealso cref="Time.timeScale"/>.
 		/// </param>
-		public static void SetTimeScaleFor(float timeScale, float durationSeconds)
-		{
-			// Reset TimeManager
-			Impl self = GetInstance();
-			self.OnDestroy();
-
-			// Start a coroutine
-			self.tempTimeScaleChange = Manager.StartCoroutine(self.SetTimeScaleCoroutine(timeScale, durationSeconds));
-		}
+		public static void SetTimeScaleFor(float timeScale, float durationSeconds) => GetInstance().SetTimeScaleFor(timeScale, durationSeconds);
 
 		static float GetDefaultTimeScale()
 		{
@@ -172,21 +164,15 @@ namespace OmiyaGames.Managers
 
 		class Impl : MonoBehaviour
 		{
+			const float IGNORE_TIMESCALE = -1f;
+
+			Coroutine tempTimeScaleChange = null;
 			TrackTimeScale timeScale = null;
 			TrackIsPaused isManuallyPaused = null;
-			public Coroutine tempTimeScaleChange = null;
+			float tempTimeScale = IGNORE_TIMESCALE;
 
 			public ITrackable<float> TimeScale => timeScale;
 			public ITrackable<bool> IsManuallyPaused => isManuallyPaused;
-
-			public void OnDestroy()
-			{
-				if (tempTimeScaleChange != null)
-				{
-					Manager.StopCoroutine(tempTimeScaleChange);
-					tempTimeScaleChange = null;
-				}
-			}
 
 			public void Setup()
 			{
@@ -202,33 +188,75 @@ namespace OmiyaGames.Managers
 				}
 			}
 
-			public System.Collections.IEnumerator SetTimeScaleCoroutine(float tempTimeScale, float durationSeconds)
+			public void SetTimeScaleFor(float tempTimeScale, float durationSeconds)
 			{
-				// Change the time scale
-				Time.timeScale = tempTimeScale;
+				// Clean-up before running a coroutine
+				StopCoroutine();
 
-				// Wait for a short duration
-				yield return new WaitForSecondsRealtime(durationSeconds);
+				// Run the coroutine
+				tempTimeScaleChange = Manager.StartCoroutine(SetTimeScaleCoroutine());
 
+				System.Collections.IEnumerator SetTimeScaleCoroutine()
+				{
+					// Change the time scale
+					this.tempTimeScale = tempTimeScale;
+					UpdateTimeScale(TimeScale.Value);
+
+					// Wait for a short duration
+					yield return new WaitForSecondsRealtime(durationSeconds);
+
+					// Revert the time scale
+					RevertTime();
+				}
+			}
+
+			void OnDestroy()
+			{
+				// Stop the coroutine
+				if (StopCoroutine())
+				{
+					// Revert the time scale
+					RevertTime();
+				}
+			}
+
+			bool StopCoroutine()
+			{
+				if (tempTimeScaleChange != null)
+				{
+					// Stop the coroutine
+					Manager.StopCoroutine(tempTimeScaleChange);
+					tempTimeScaleChange = null;
+					return true;
+				}
+				return false;
+			}
+
+			void RevertTime()
+			{
 				// Revert the time scale
+				tempTimeScale = IGNORE_TIMESCALE;
 				UpdateTimeScale(TimeScale.Value);
 			}
 
-			void UpdateTimeScale(float timeScale) => UpdateTimeScale(timeScale, IsManuallyPaused.Value);
-			void UpdateTimeScale(bool isManuallyPaused) => UpdateTimeScale(TimeScale.Value, isManuallyPaused);
-
-			static void UpdateTimeScale(float timeScale, bool isManuallyPaused)
+			void UpdateTimeScale(float timeScale) => UpdateTimeScale(timeScale, IsManuallyPaused.Value, tempTimeScale);
+			void UpdateTimeScale(bool isManuallyPaused) => UpdateTimeScale(TimeScale.Value, isManuallyPaused, tempTimeScale);
+			static void UpdateTimeScale(float timeScale, bool isManuallyPaused, float tempTimeScale)
 			{
 				// Check if paused
-				if (isManuallyPaused == false)
+				if (isManuallyPaused)
+				{
+					// If so, pause
+					Time.timeScale = 0f;
+				}
+				else if (tempTimeScale < 0f)
 				{
 					// If not, progress normally
 					Time.timeScale = timeScale;
 				}
 				else
 				{
-					// If so, pause
-					Time.timeScale = 0f;
+					Time.timeScale = tempTimeScale;
 				}
 			}
 
