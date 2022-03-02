@@ -55,7 +55,12 @@ namespace OmiyaGames.Managers
 	/// <strong>Author:</strong> Taro Omiya
 	/// </term>
 	/// <description>
-	/// mAKING
+	/// Changing to a <c>static</c> class so this script can't be
+	/// accidentally attached to another <see cref="GameObject"/>.
+	/// Renamed <c>OnBeforeManualPausedChanged</c> to
+	/// <see cref="OnBeforeIsManuallyPausedChanged"/>, and
+	/// <c>OnAfterManualPausedChanged</c> to
+	/// <see cref="OnAfterIsManuallyPausedChanged"/>.
 	/// </description>
 	/// </item>
 	/// </list>
