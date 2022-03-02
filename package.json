@@ -1,7 +1,7 @@
 {
   "name": "com.omiyagames.managers",
   "displayName": "Omiya Games - Managers",
-  "version": "1.0.1-pre.1",
+  "version": "1.0.1-pre.2",
   "unity": "2021.2",
   "unityRelease": "11f1",
   "description": "A series of common singleton scripts.",
@@ -16,8 +16,8 @@
   "dependencies": {
     "com.unity.ext.nunit": "1.0.0",
     "com.omiyagames.common": "1.2.0",
-    "com.omiyagames.global": "1.3.0",
-    "com.omiyagames.saves": "0.2.1-exp.1"
+    "com.omiyagames.global": "1.4.0",
+    "com.omiyagames.saves": "0.2.2-exp.1"
   },
   "keywords": [
     "Omiya Games",
