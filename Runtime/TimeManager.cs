@@ -171,14 +171,14 @@ namespace OmiyaGames.Managers
 			self.OnDestroy();
 
 			// Start a coroutine
-			self.tempTimeScaleChange = FramesManager.Start(self.SetTimeScaleCoroutine(timeScale, durationSeconds));
+			self.tempTimeScaleChange = Manager.StartCoroutine(self.SetTimeScaleCoroutine(timeScale, durationSeconds));
 		}
 
 		void OnDestroy()
 		{
 			if (tempTimeScaleChange != null)
 			{
-				FramesManager.Stop(tempTimeScaleChange);
+				Manager.StopCoroutine(tempTimeScaleChange);
 				tempTimeScaleChange = null;
 			}
 		}
