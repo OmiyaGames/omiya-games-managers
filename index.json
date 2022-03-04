@@ -17,7 +17,7 @@
   "manual/changelog.html": {
     "href": "manual/changelog.html",
     "title": "Change Log: | Managers documentation",
-    "keywords": "Change Log: 1.0.1-pre.2 Changing TimeManager to a static class. Breaking Change: Renamed event OnBeforeManualPausedChanged(TimeManager) and OnAfterManualPausedChanged(TimeManager) in TimeManager to OnBeforeIsManuallyPausedChanged(bool, bool) and OnAfterIsManuallyPausedChanged(bool, bool) respectively. 1.0.1-pre.1 Bug Fix: making the call TimeManager.SetTimeScaleFor() will no longer permanently change the time scale. 1.0.0-pre.1 Initial release! Adding TimeManager to handle time scale management."
+    "keywords": "Change Log: 1.0.1-pre.3 Simplifying dependencies. 1.0.1-pre.2 Changing TimeManager to a static class. Breaking Change: Renamed event OnBeforeManualPausedChanged(TimeManager) and OnAfterManualPausedChanged(TimeManager) in TimeManager to OnBeforeIsManuallyPausedChanged(bool, bool) and OnAfterIsManuallyPausedChanged(bool, bool) respectively. 1.0.1-pre.1 Bug Fix: making the call TimeManager.SetTimeScaleFor() will no longer permanently change the time scale. 1.0.0-pre.1 Initial release! Adding TimeManager to handle time scale management."
   },
   "manual/README.html": {
     "href": "manual/README.html",
