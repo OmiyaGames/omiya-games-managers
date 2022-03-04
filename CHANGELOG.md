@@ -1,5 +1,9 @@
 # Change Log:
 
+## 1.0.1-pre.3
+
+- Simplifying dependencies.
+
 ## 1.0.1-pre.2
 
 - Changing [`TimeManager`](/Runtime/TimeManager.cs) to a static class.
