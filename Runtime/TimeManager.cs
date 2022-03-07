@@ -82,18 +82,31 @@ namespace OmiyaGames.Managers
 			Impl returnInstance = ComponentSingleton<Impl>.Get(false, out bool isFirstTimeCreated);
 			if (isFirstTimeCreated)
 			{
-				// Grab the saved time scale
-				float timeScale = GetDefaultTimeScale();
-
 				// Update the time scales
 				returnInstance.Setup();
-				returnInstance.TimeScale.Value = timeScale;
 			}
 			return returnInstance;
 		}
 
 		/// <summary>
-		/// Triggers when paused.
+		/// Triggers when time scale changes, before the effects are settled.
+		/// </summary>
+		public static event ITrackable<float>.ChangeEvent OnBeforeTimeScaleChanged
+		{
+			add => GetInstance().TimeScale.OnBeforeValueChanged += value;
+			remove => GetInstance().TimeScale.OnBeforeValueChanged -= value;
+		}
+		/// <summary>
+		/// Triggers when time scale changes, after the effects are settled.
+		/// </summary>
+		public static event ITrackable<float>.ChangeEvent OnAfterTimeScaleChanged
+		{
+			add => GetInstance().TimeScale.OnAfterValueChanged += value;
+			remove => GetInstance().TimeScale.OnAfterValueChanged -= value;
+		}
+
+		/// <summary>
+		/// Triggers when pause state changes, before the effects are settled.
 		/// </summary>
 		public static event ITrackable<bool>.ChangeEvent OnBeforeIsManuallyPausedChanged
 		{
@@ -101,7 +114,7 @@ namespace OmiyaGames.Managers
 			remove => GetInstance().IsManuallyPaused.OnBeforeValueChanged -= value;
 		}
 		/// <summary>
-		/// Triggers when paused.
+		/// Triggers when pause state changes, after the effects are settled.
 		/// </summary>
 		public static event ITrackable<bool>.ChangeEvent OnAfterIsManuallyPausedChanged
 		{
@@ -110,9 +123,16 @@ namespace OmiyaGames.Managers
 		}
 
 		/// <summary>
-		/// The "stable" time scale, unaffected by
-		/// hit-pauses, etc.
+		/// The "stable" time scale, unaffected by hit-pauses, etc.
 		/// </summary>
+		/// <remarks>
+		/// This value is multiplied to the player-customized time scale
+		/// (usually on the accessibility menu) before changing
+		/// <see cref="Time.timeScale"/>. For example, if the player adjusts
+		/// their accessibility time scale to 0.5, and then the programmer sets
+		/// this property to 1.0, <see cref="Time.timeScale"/> will be set to 0.5
+		/// (<c>1.0 * 0.5 = 0.5</c>).
+		/// </remarks>
 		public static float TimeScale
 		{
 			get => GetInstance().TimeScale.Value;
@@ -135,7 +155,7 @@ namespace OmiyaGames.Managers
 		public static void RevertTimeScale()
 		{
 			IsManuallyPaused = false;
-			TimeScale = GetDefaultTimeScale();
+			TimeScale = 1;
 		}
 
 		/// <summary>
@@ -148,27 +168,18 @@ namespace OmiyaGames.Managers
 		/// </param>
 		public static void SetTimeScaleFor(float timeScale, float durationSeconds) => GetInstance().SetTimeScaleFor(timeScale, durationSeconds);
 
-		static float GetDefaultTimeScale()
-		{
-			float timeScale = 1f;
-
-			// FIXME: retrieve time-scale through other means
-			// Attempt to retrieve the time scale from settings
-			Saves.GameSettings settings = Singleton.Get<Saves.GameSettings>();
-			if (settings != null)
-			{
-				timeScale = settings.CustomTimeScale;
-			}
-			return timeScale;
-		}
-
 		class Impl : MonoBehaviour
 		{
 			const float IGNORE_TIMESCALE = -1f;
 
-			Coroutine tempTimeScaleChange = null;
 			TrackTimeScale timeScale = null;
 			TrackIsPaused isManuallyPaused = null;
+			
+			// FIXME: Change this to a SaveFloat ASAP
+			ITrackable<float> accessibilityScale = new Trackable<float>(1);
+			ITrackable<float>.ChangeEvent onAccessibilityScaleChanged = null;
+
+			Coroutine tempTimeScaleChange = null;
 			float tempTimeScale = IGNORE_TIMESCALE;
 
 			public ITrackable<float> TimeScale => timeScale;
@@ -176,15 +187,32 @@ namespace OmiyaGames.Managers
 
 			public void Setup()
 			{
+				// Setup trackable time scale
 				if (timeScale == null)
 				{
 					timeScale = new TrackTimeScale();
 					timeScale.Update += UpdateTimeScale;
 				}
+
+				// Setup trackable pause state
 				if (isManuallyPaused == null)
 				{
 					isManuallyPaused = new TrackIsPaused();
 					isManuallyPaused.Update += UpdateTimeScale;
+				}
+
+				if (onAccessibilityScaleChanged == null)
+				{
+					// FIXME: retrieve time-scale through SaveFloat instead
+					Saves.GameSettings settings = Singleton.Get<Saves.GameSettings>();
+					if (settings != null)
+					{
+						accessibilityScale.Value = settings.CustomTimeScale;
+					}
+
+					// Listen to event
+					onAccessibilityScaleChanged = new ITrackable<float>.ChangeEvent(UpdateTimeScale);
+					accessibilityScale.OnAfterValueChanged += onAccessibilityScaleChanged;
 				}
 			}
 
@@ -218,6 +246,23 @@ namespace OmiyaGames.Managers
 					// Revert the time scale
 					RevertTime();
 				}
+
+				// Unsubscribe from events
+				if (timeScale != null)
+				{
+					timeScale.Update -= UpdateTimeScale;
+					timeScale = null;
+				}
+				if (isManuallyPaused != null)
+				{
+					isManuallyPaused.Update -= UpdateTimeScale;
+					isManuallyPaused = null;
+				}
+				if (onAccessibilityScaleChanged != null)
+				{
+					accessibilityScale.OnAfterValueChanged -= onAccessibilityScaleChanged;
+					onAccessibilityScaleChanged = null;
+				}
 			}
 
 			bool StopCoroutine()
@@ -239,9 +284,10 @@ namespace OmiyaGames.Managers
 				UpdateTimeScale(TimeScale.Value);
 			}
 
-			void UpdateTimeScale(float timeScale) => UpdateTimeScale(timeScale, IsManuallyPaused.Value, tempTimeScale);
-			void UpdateTimeScale(bool isManuallyPaused) => UpdateTimeScale(TimeScale.Value, isManuallyPaused, tempTimeScale);
-			static void UpdateTimeScale(float timeScale, bool isManuallyPaused, float tempTimeScale)
+			void UpdateTimeScale(float timeScale) => UpdateTimeScale(timeScale, IsManuallyPaused.Value, accessibilityScale.Value, tempTimeScale);
+			void UpdateTimeScale(bool isManuallyPaused) => UpdateTimeScale(TimeScale.Value, isManuallyPaused, accessibilityScale.Value, tempTimeScale);
+			void UpdateTimeScale(float _, float newAccessibilityScale) => UpdateTimeScale(TimeScale.Value, IsManuallyPaused.Value, newAccessibilityScale, tempTimeScale);
+			static void UpdateTimeScale(float timeScale, bool isManuallyPaused, float accessibilityScale, float tempTimeScale)
 			{
 				// Check if paused
 				if (isManuallyPaused)
@@ -252,11 +298,11 @@ namespace OmiyaGames.Managers
 				else if (tempTimeScale < 0f)
 				{
 					// If not, progress normally
-					Time.timeScale = timeScale;
+					Time.timeScale = (timeScale * accessibilityScale);
 				}
 				else
 				{
-					Time.timeScale = tempTimeScale;
+					Time.timeScale = (tempTimeScale * accessibilityScale);
 				}
 			}
 
