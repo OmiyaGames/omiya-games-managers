@@ -55,12 +55,33 @@ namespace OmiyaGames.Managers
 	/// <strong>Author:</strong> Taro Omiya
 	/// </term>
 	/// <description>
+	/// <para>
 	/// Changing to a <c>static</c> class so this script can't be
 	/// accidentally attached to another <see cref="GameObject"/>.
+	/// </para><para>
 	/// Renamed <c>OnBeforeManualPausedChanged</c> to
 	/// <see cref="OnBeforeIsManuallyPausedChanged"/>, and
 	/// <c>OnAfterManualPausedChanged</c> to
 	/// <see cref="OnAfterIsManuallyPausedChanged"/>.
+	/// </para>
+	/// </description>
+	/// </item><item>
+	/// <term>
+	/// <strong>Version:</strong> 1.0.1-pre.4<br/>
+	/// <strong>Date:</strong> 3/13/2022<br/>
+	/// <strong>Author:</strong> Taro Omiya
+	/// </term>
+	/// <description>
+	/// <para>
+	/// Changed <see cref="TimeScale"/> to be multiplied with user settings
+	/// before setting <see cref="Time.timeScale"/>.  This prevents the
+	/// programmer from overriding the user settings, and keeps the experience
+	/// consistent for those that needs the time-scale reduction accessibility
+	/// feature.
+	/// </para><para>
+	/// Added <see cref="OnBeforeTimeScaleChanged"/> and
+	/// <see cref="OnAfterTimeScaleChanged"/>.
+	/// </para>
 	/// </description>
 	/// </item>
 	/// </list>
