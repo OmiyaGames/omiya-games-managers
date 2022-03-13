@@ -1,7 +1,7 @@
 {
   "name": "com.omiyagames.managers",
   "displayName": "Omiya Games - Managers",
-  "version": "1.0.1-pre.3",
+  "version": "1.0.1-pre.4",
   "unity": "2021.2",
   "unityRelease": "11f1",
   "description": "A series of common singleton scripts.",
