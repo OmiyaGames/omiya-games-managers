@@ -32,12 +32,24 @@ references:
   commentId: E:OmiyaGames.Managers.TimeManager.OnAfterIsManuallyPausedChanged
   fullName: OmiyaGames.Managers.TimeManager.OnAfterIsManuallyPausedChanged
   nameWithType: TimeManager.OnAfterIsManuallyPausedChanged
+- uid: OmiyaGames.Managers.TimeManager.OnAfterTimeScaleChanged
+  name: OnAfterTimeScaleChanged
+  href: api/OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnAfterTimeScaleChanged
+  commentId: E:OmiyaGames.Managers.TimeManager.OnAfterTimeScaleChanged
+  fullName: OmiyaGames.Managers.TimeManager.OnAfterTimeScaleChanged
+  nameWithType: TimeManager.OnAfterTimeScaleChanged
 - uid: OmiyaGames.Managers.TimeManager.OnBeforeIsManuallyPausedChanged
   name: OnBeforeIsManuallyPausedChanged
   href: api/OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnBeforeIsManuallyPausedChanged
   commentId: E:OmiyaGames.Managers.TimeManager.OnBeforeIsManuallyPausedChanged
   fullName: OmiyaGames.Managers.TimeManager.OnBeforeIsManuallyPausedChanged
   nameWithType: TimeManager.OnBeforeIsManuallyPausedChanged
+- uid: OmiyaGames.Managers.TimeManager.OnBeforeTimeScaleChanged
+  name: OnBeforeTimeScaleChanged
+  href: api/OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnBeforeTimeScaleChanged
+  commentId: E:OmiyaGames.Managers.TimeManager.OnBeforeTimeScaleChanged
+  fullName: OmiyaGames.Managers.TimeManager.OnBeforeTimeScaleChanged
+  nameWithType: TimeManager.OnBeforeTimeScaleChanged
 - uid: OmiyaGames.Managers.TimeManager.RevertTimeScale
   name: RevertTimeScale()
   href: api/OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_RevertTimeScale

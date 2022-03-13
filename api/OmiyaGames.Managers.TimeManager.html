@@ -133,12 +133,30 @@ Converting from Singleton script to its own unique package.
 <strong>Date:</strong> 2/12/2022<br>
 <strong>Author:</strong> Taro Omiya
 </td><td>
+<p>
 Changing to a <code>static</code> class so this script can&apos;t be
 accidentally attached to another <see cref="!:GameObject"></see>.
+</p><p>
 Renamed <code>OnBeforeManualPausedChanged</code> to
 <a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnBeforeIsManuallyPausedChanged">OnBeforeIsManuallyPausedChanged</a>, and
 <code>OnAfterManualPausedChanged</code> to
 <a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnAfterIsManuallyPausedChanged">OnAfterIsManuallyPausedChanged</a>.
+</p>
+</td></tr><tr><td>
+<strong>Version:</strong> 1.0.1-pre.4<br>
+<strong>Date:</strong> 3/13/2022<br>
+<strong>Author:</strong> Taro Omiya
+</td><td>
+<p>
+Changed <a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_TimeScale">TimeScale</a> to be multiplied with user settings
+before setting <see cref="!:Time.timeScale"></see>.  This prevents the
+programmer from overriding the user settings, and keeps the experience
+consistent for those that needs the time-scale reduction accessibility
+feature.
+</p><p>
+Added <a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnBeforeTimeScaleChanged">OnBeforeTimeScaleChanged</a> and
+<a class="xref" href="OmiyaGames.Managers.TimeManager.html#OmiyaGames_Managers_TimeManager_OnAfterTimeScaleChanged">OnAfterTimeScaleChanged</a>.
+</p>
 </td></tr></tbody></table></p>
 </div>
   <h3 id="properties">Properties
@@ -173,8 +191,7 @@ Renamed <code>OnBeforeManualPausedChanged</code> to
   
   <a id="OmiyaGames_Managers_TimeManager_TimeScale_" data-uid="OmiyaGames.Managers.TimeManager.TimeScale*"></a>
   <h4 id="OmiyaGames_Managers_TimeManager_TimeScale" data-uid="OmiyaGames.Managers.TimeManager.TimeScale">TimeScale</h4>
-  <div class="markdown level1 summary"><p>The &quot;stable&quot; time scale, unaffected by
-hit-pauses, etc.</p>
+  <div class="markdown level1 summary"><p>The &quot;stable&quot; time scale, unaffected by hit-pauses, etc.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -196,6 +213,14 @@ hit-pauses, etc.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="OmiyaGames_Managers_TimeManager_TimeScale_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This value is multiplied to the player-customized time scale
+(usually on the accessibility menu) before changing
+<see cref="!:Time.timeScale"></see>. For example, if the player adjusts
+their accessibility time scale to 0.5, and then the programmer sets
+this property to 1.0, <see cref="!:Time.timeScale"></see> will be set to 0.5
+(<code>1.0 * 0.5 = 0.5</code>).</p>
+</div>
   <h3 id="methods">Methods
   </h3>
   
@@ -251,7 +276,7 @@ Duration is not affected by <seealso cref="!:Time.timeScale"></seealso>.</p>
   
   
   <h4 id="OmiyaGames_Managers_TimeManager_OnAfterIsManuallyPausedChanged" data-uid="OmiyaGames.Managers.TimeManager.OnAfterIsManuallyPausedChanged">OnAfterIsManuallyPausedChanged</h4>
-  <div class="markdown level1 summary"><p>Triggers when paused.</p>
+  <div class="markdown level1 summary"><p>Triggers when pause state changes, after the effects are settled.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -275,13 +300,63 @@ Duration is not affected by <seealso cref="!:Time.timeScale"></seealso>.</p>
   </table>
   
   
+  <h4 id="OmiyaGames_Managers_TimeManager_OnAfterTimeScaleChanged" data-uid="OmiyaGames.Managers.TimeManager.OnAfterTimeScaleChanged">OnAfterTimeScaleChanged</h4>
+  <div class="markdown level1 summary"><p>Triggers when time scale changes, after the effects are settled.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static event ITrackable&lt;float&gt;.ChangeEvent OnAfterTimeScaleChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ITrackable.ChangeEvent</span>&lt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="OmiyaGames_Managers_TimeManager_OnBeforeIsManuallyPausedChanged" data-uid="OmiyaGames.Managers.TimeManager.OnBeforeIsManuallyPausedChanged">OnBeforeIsManuallyPausedChanged</h4>
-  <div class="markdown level1 summary"><p>Triggers when paused.</p>
+  <div class="markdown level1 summary"><p>Triggers when pause state changes, before the effects are settled.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static event ITrackable&lt;bool&gt;.ChangeEvent OnBeforeIsManuallyPausedChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ITrackable.ChangeEvent</span>&lt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="OmiyaGames_Managers_TimeManager_OnBeforeTimeScaleChanged" data-uid="OmiyaGames.Managers.TimeManager.OnBeforeTimeScaleChanged">OnBeforeTimeScaleChanged</h4>
+  <div class="markdown level1 summary"><p>Triggers when time scale changes, before the effects are settled.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static event ITrackable&lt;float&gt;.ChangeEvent OnBeforeTimeScaleChanged</code></pre>
   </div>
   <h5 class="eventType">Event Type</h5>
   <table class="table table-bordered table-striped table-condensed">

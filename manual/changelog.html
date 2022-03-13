@@ -79,6 +79,14 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="change-log">Change Log:</h1>
 
+<h2 id="101-pre4">1.0.1-pre.4</h2>
+<ul>
+<li>Adjusting <a href="/Runtime/TimeManager.cs"><code>TimeManager</code></a> behavior.<ul>
+<li><strong>Breaking Change:</strong> <code>TimeScale</code> property is no longer representative of the actual <code>Time.timeScale</code> value.  Instead, if the user turns on the accessibility feature to adjust the time scale, <code>TimeScale</code> will be multiplied with that new accessibility value into <code>Time.timeScale</code>.  For example, if <code>TimeScale</code> is set to 0.5, and user-set time scale is 0.2, then <code>Time.timeScale</code> will be set to 0.1 (<code>0.5 x 0.2 = 0.1</code>).  This will prevent the programmer from overriding the user settings, at least within <code>TimeManager</code>&#39;s scope.</li>
+<li><strong>New Feature:</strong> exposed <code>OnBeforeTimeScaleChanged</code> and <code>OnAfterTimeScaleChanged</code> events to listen to programmer changing the <code>TimeScale</code> value.</li>
+</ul>
+</li>
+</ul>
 <h2 id="101-pre3">1.0.1-pre.3</h2>
 <ul>
 <li>Simplifying dependencies.</li>
